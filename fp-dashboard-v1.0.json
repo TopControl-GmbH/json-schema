@@ -1,26 +1,26 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Dashboard",
+  "title": "Dashboard schema 1.0",
   "type": "object",
   "additionalProperties": false,
   "properties": {
     "name": {
-      "description": "Name of the Dashboard",
+      "description": "Name of the Dashboard.",
       "$ref": "#/$def/Name"
     },
     "category": {
-      "description": "Dashboards will be grouped by their category on the Dashboards page",
+      "description": "Category of the Dashboard, used to group dashboards on the Dashboards-overview page.",
       "$ref": "#/$def/Enums/DashboardCategory"
     },
     "filters": {
-      "description": "A list of filters with which the content of the dashboard filtered",
+      "description": "A list of filters which enable the end users to customize the data displayed on the Dashboard.",
       "type": "array",
       "items": {
         "$ref": "#/$def/Filter"
       }
     },
     "widgets": {
-      "description": "A list of widgets shown on the dashboard",
+      "description": "A list of widgets displayed in the dashboard.",
       "type": "array",
       "items": {
         "$ref": "#/$def/Widget"
@@ -31,7 +31,7 @@
   "$def": {
     "Name": {
       "oneOf": [
-        { "description": "Inrelevant language", "type": "string" },
+        { "type": "string" },
         {
           "type": "object",
           "properties": {
@@ -59,11 +59,11 @@
           "additionalProperties": false,
           "properties": {
             "type": {
-              "description": "Allows the user to limit the data shown based on time or date",
+              "description": "The time filter enables end users to display dashboard data according to specific time periods.",
               "const": "TIME"
             },
             "default": {
-              "description": "The default value for the date/time filter",
+              "description": "The default value for the time filter.",
               "$ref": "#/$def/Enums/DefaultDashboardTimeFilter"
             }
           }
@@ -73,10 +73,13 @@
           "additionalProperties": false,
           "properties": {
             "type": {
-              "description": "Allows the user to limit the data shown based on articles",
+              "description": "The Article filter enables end users to display dashboard data based on specific articles.",
               "const": "ARTICLE"
             },
-            "optional": { "type": "boolean" }
+            "optional": {
+              "description": "Configures wheather the artice filter is optional (true) or required (false).",
+              "type": "boolean"
+            }
           }
         },
         "Line": {
@@ -84,16 +87,20 @@
           "additionalProperties": false,
           "properties": {
             "type": {
-              "description": "Allows the user to limit the data shown based on lines",
+              "description": "The Line filter enables the end user to filter the data shown on the dashboard based on lines.",
               "const": "LINE"
             },
             "line_types": {
+              "description": "A list of line types available in the line filter dialogue.",
               "type": "array",
               "items": {
                 "$ref": "#/$def/Enums/LineType"
               }
             },
-            "optional": { "type": "boolean" }
+            "optional": {
+              "description": "Configures wheather the line filter is optional (true) or required (false).",
+              "type": "boolean"
+            }
           }
         }
       }
@@ -119,12 +126,33 @@
           ],
           "additionalProperties": false,
           "properties": {
-            "type": { "const": "TEXT" },
-            "title": { "$ref": "#/$def/Name" },
-            "column": { "type": "integer", "minimum": 0 },
-            "row": { "type": "integer", "minimum": 0 },
-            "width": { "type": "integer", "minimum": 1 },
-            "height": { "type": "integer", "minimum": 1 },
+            "type": { "description": "Text widget.", "const": "TEXT" },
+            "title": {
+              "description": "Title of the widget.",
+              "$ref": "#/$def/Name"
+            },
+            "column": {
+              "description": "The horizontal position of the widget.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 11
+            },
+            "row": {
+              "description": "The vertical position of the widget.",
+              "type": "integer",
+              "minimum": 0
+            },
+            "width": {
+              "description": "The width of the widget",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            },
+            "height": {
+              "description": "the height of the widget",
+              "type": "integer",
+              "minimum": 1
+            },
             "data_source": {
               "type": "object",
               "oneOf": [
@@ -143,9 +171,11 @@
               ]
             },
             "metric": {
+              "description": "Metric for this widget.",
               "type": "string"
             },
             "time_filter": {
+              "description": "Time filter that applies only to this widget.",
               "$ref": "#/$def/Enums/DashboardDataSourceTimeFilter"
             }
           },
@@ -232,16 +262,36 @@
             "data_source",
             "common_series_settings",
             "series",
-            "pagination_enabled",
-            "maximum_page_items"
+            "pagination_enabled"
           ],
           "properties": {
-            "type": { "const": "CHART" },
-            "title": { "$ref": "#/$def/Name" },
-            "column": { "type": "integer", "minimum": 0 },
-            "row": { "type": "integer", "minimum": 0 },
-            "width": { "type": "integer", "minimum": 1 },
-            "height": { "type": "integer", "minimum": 1 },
+            "type": { "description": "Chart widget.", "const": "CHART" },
+            "title": {
+              "description": "Title of the widget.",
+              "$ref": "#/$def/Name"
+            },
+            "column": {
+              "description": "The horizontal position of the widget.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 11
+            },
+            "row": {
+              "description": "The vertical position of the widget.",
+              "type": "integer",
+              "minimum": 0
+            },
+            "width": {
+              "description": "The width of the widget",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            },
+            "height": {
+              "description": "the height of the widget",
+              "type": "integer",
+              "minimum": 1
+            },
             "data_source": {
               "type": "object",
               "oneOf": [
@@ -260,6 +310,7 @@
               ]
             },
             "common_series_settings": {
+              "description": "Settings that apply to every series.",
               "type": "object",
               "required": ["dimension"],
               "additionalProperties": false,
@@ -269,11 +320,13 @@
                 },
                 "dimension": { "type": "string" },
                 "time_filter": {
+                  "description": "Time filter that applies only to this widget.",
                   "$ref": "#/$def/Enums/DashboardDataSourceTimeFilter"
                 }
               }
             },
             "series": {
+              "description": "List of individual series.",
               "type": "array",
               "items": {
                 "type": "object",
@@ -283,22 +336,29 @@
                   "type": {
                     "$ref": "#/$def/Enums/DashboardChartSeriesType"
                   },
-                  "name": { "$ref": "#/$def/Name" },
-                  "metric": { "type": "string" },
+                  "name": {
+                    "description": "Name of the series.",
+                    "$ref": "#/$def/Name"
+                  },
+                  "metric": {
+                    "description": "Metric for this series.",
+                    "type": "string"
+                  },
                   "time_filter": {
+                    "description": "Time filter that applies only to this series.",
                     "$ref": "#/$def/Enums/DashboardDataSourceTimeFilter"
                   }
                 }
               }
             },
             "pagination_enabled": {
-              "description": "Configures weather the displayed data should be split into pages. Page size is configured by 'maximum_page_items'",
+              "description": "Configures whether the displayed data should be split into pages. Page size can be configured by 'maximum_page_items'",
               "type": "boolean"
             },
             "maximum_page_items": {
-              "description": "Configures how many records are shown per page when 'pagination_enabled' is enabled",
+              "description": "Configures how many items are shown per page when 'pagination_enabled' is enabled. Default value is 10.",
               "type": "integer",
-              "minimum": 1
+              "minimum": 0
             }
           },
           "allOf": [
@@ -478,12 +538,36 @@
           ],
           "additionalProperties": false,
           "properties": {
-            "type": { "const": "PIE_CHART" },
-            "title": { "$ref": "#/$def/Name" },
-            "column": { "type": "integer", "minimum": 0 },
-            "row": { "type": "integer", "minimum": 0 },
-            "width": { "type": "integer", "minimum": 1 },
-            "height": { "type": "integer", "minimum": 1 },
+            "type": {
+              "description": "Pie chart widget.",
+              "const": "PIE_CHART"
+            },
+            "title": {
+              "description": "Title of the widget.",
+              "$ref": "#/$def/Name"
+            },
+            "column": {
+              "description": "The horizontal position of the widget.",
+              "type": "integer",
+              "minimum": 0
+            },
+            "row": {
+              "description": "The vertical position of the widget.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 11
+            },
+            "width": {
+              "description": "The width of the widget",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            },
+            "height": {
+              "description": "the height of the widget",
+              "type": "integer",
+              "minimum": 1
+            },
             "data_source": {
               "type": "object",
               "oneOf": [
@@ -510,9 +594,11 @@
                   "type": "string"
                 },
                 "time_filter": {
+                  "description": "Time filter that applies only to this widget.",
                   "$ref": "#/$def/Enums/DashboardDataSourceTimeFilter"
                 },
                 "small_values_grouping": {
+                  "description": "Configures wheather (and how) smaller values should be grouped into a single slice.",
                   "$ref": "#/$def/Widget/PieChartSmallValuesGrouping"
                 }
               }
@@ -524,14 +610,20 @@
                 "required": ["name", "metric"],
                 "additionalProperties": false,
                 "properties": {
-                  "name": { "$ref": "#/$def/Name" },
+                  "name": {
+                    "description": "Name of the series",
+                    "$ref": "#/$def/Name"
+                  },
                   "metric": {
+                    "description": "Metric for this series.",
                     "type": "string"
                   },
                   "time_filter": {
+                    "description": "Time filter that applies only to this series.",
                     "$ref": "#/$def/Enums/DashboardDataSourceTimeFilter"
                   },
                   "small_values_grouping": {
+                    "description": "Configures wheather (and how) smaller values should be grouped into a single slice.",
                     "$ref": "#/$def/Widget/PieChartSmallValuesGrouping"
                   }
                 }
@@ -704,7 +796,7 @@
       },
       "WidgetDataSource": {
         "WeighingStatisticData": {
-          "description": "WEIGHING_STATISTIC_DATA",
+          "description": "Weighing statistic data",
           "additionalProperties": false,
           "required": [
             "type",
@@ -713,8 +805,12 @@
           ],
           "type": "object",
           "properties": {
-            "type": { "const": "WEIGHING_STATISTIC_DATA" },
+            "type": {
+              "description": "Defines the weighing statistic data",
+              "const": "WEIGHING_STATISTIC_DATA"
+            },
             "process_type": {
+              "description": "Data of which process type should be included.",
               "$ref": "#/$def/Enums/OrderTypeReference"
             },
             "include_only_order_relevant_weighings": {
@@ -724,34 +820,45 @@
           }
         },
         "DowntimeStatisticData": {
-          "description": "DOWNTIME_STATISTIC_DATA",
+          "description": "Downtime statistic data",
           "additionalProperties": false,
           "required": ["type"],
           "type": "object",
           "properties": {
-            "type": { "const": "DOWNTIME_STATISTIC_DATA" }
+            "type": {
+              "description": "Defines the downtime statistic data",
+              "const": "DOWNTIME_STATISTIC_DATA"
+            }
           }
         },
         "OrderStatisticData": {
-          "description": "ORDER_STATISTIC_DATA",
+          "description": "Order statistic data",
           "additionalProperties": false,
           "required": ["type", "order_type"],
           "type": "object",
           "properties": {
-            "type": { "const": "ORDER_STATISTIC_DATA" },
+            "type": {
+              "description": "Defines the order statistic data",
+              "const": "ORDER_STATISTIC_DATA"
+            },
             "order_type": {
+              "description": "Data of which order type should be included.",
               "$ref": "#/$def/Enums/OrderTypeReference"
             }
           }
         },
         "LoginStatisticData": {
-          "description": "LOGIN_STATISTIC_DATA",
+          "description": "Login statistic data",
           "additionalProperties": false,
           "required": ["type"],
           "type": "object",
           "properties": {
-            "type": { "const": "LOGIN_STATISTIC_DATA" },
+            "type": {
+              "description": "Defines the login statistic data",
+              "const": "LOGIN_STATISTIC_DATA"
+            },
             "activity_types": {
+              "description": "Data of which activity types should be included.",
               "type": "array",
               "items": {
                 "$ref": "#/$def/Enums/ActivityType"
@@ -763,7 +870,7 @@
       "PieChartSmallValuesGrouping": {
         "type": "object",
         "required": ["mode"],
-        "description": "Configures how smaller points on the PieChart are collected in a single group",
+        "description": "Configures how smaller points on the PieChart are collected in a single group.",
         "properties": {
           "mode": {
             "default": "TOP_N",
@@ -780,10 +887,11 @@
               }
             },
             "then": {
+              "description": "Top N points with the biggest values remain ungrouped.",
               "required": ["mode", "top_count"],
               "properties": {
                 "top_count": {
-                  "description": "Top N points with the biggest values remain ungrouped",
+                  "description": "Defines how many of the biggest values remain ungrouped.",
                   "type": "integer",
                   "minimum": 1
                 }
@@ -799,10 +907,11 @@
               }
             },
             "then": {
+              "description": "Points that fall beyond a threshold establish a group.",
               "required": ["mode", "threshold"],
               "properties": {
                 "threshold": {
-                  "description": "Points that fall beyond a threshold establish a group",
+                  "description": "Defines below which threshold items establish a group.",
                   "type": "number",
                   "minimum": 0
                 }
