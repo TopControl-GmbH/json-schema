@@ -1,0 +1,1410 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dashboard schema 1.1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "description": "Name of the Dashboard.",
+      "$ref": "#/$def/Name"
+    },
+    "category": {
+      "description": "Category of the Dashboard, used to group dashboards on the Dashboards-overview page.",
+      "$ref": "#/$def/Enums/DashboardCategory"
+    },
+    "filters": {
+      "description": "A list of filters which enable the end users to customize the data displayed on the Dashboard.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$def/Filter"
+      }
+    },
+    "widgets": {
+      "description": "A list of widgets displayed in the dashboard.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$def/Widget"
+      }
+    },
+    "tv_compatible": {
+      "description": "Configures whether the dashboard is TV compatible or not.",
+      "type": "boolean"
+    }
+  },
+  "required": ["name", "category", "filters", "widgets"],
+  "$def": {
+    "Name": {
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "properties": {
+            "en": { "description": "English translation", "type": "string" },
+            "de": { "description": "German translation", "type": "string" },
+            "it": { "description": "Italian translation", "type": "string" },
+            "es": { "description": "Spanish translation", "type": "string" },
+            "fr": { "description": "French translation", "type": "string" }
+          },
+          "minProperties": 1,
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Filter": {
+      "type": "object",
+      "oneOf": [
+        { "$ref": "#/$def/Filter/FilterItem/Time" },
+        { "$ref": "#/$def/Filter/FilterItem/Article" },
+        { "$ref": "#/$def/Filter/FilterItem/Line" },
+        { "$ref": "#/$def/Filter/FilterItem/Order" }
+      ],
+      "FilterItem": {
+        "Time": {
+          "required": ["type", "default"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "description": "The time filter enables end users to display dashboard data according to specific time periods.",
+              "const": "TIME"
+            },
+            "default": {
+              "description": "The default value for the time filter.",
+              "$ref": "#/$def/Enums/DefaultDashboardTimeFilter"
+            }
+          }
+        },
+        "Article": {
+          "required": ["type", "optional"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "description": "The Article filter enables end users to display dashboard data based on specific articles.",
+              "const": "ARTICLE"
+            },
+            "single_selection": {
+              "description": "If set, only one article can be selected; otherwise, multiple articles can be selected.",
+              "type": "boolean"
+            },
+            "optional": {
+              "description": "Configures whether the article filter is optional (true) or required (false).",
+              "type": "boolean"
+            }
+          }
+        },
+        "Line": {
+          "required": ["type", "line_types", "optional"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "description": "The Line filter enables the end user to filter the data shown on the dashboard based on lines.",
+              "const": "LINE"
+            },
+            "line_types": {
+              "description": "A list of line types available in the line filter dialogue.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$def/Enums/LineType"
+              }
+            },
+            "single_selection": {
+              "description": "If set, only one line can be selected; otherwise, multiple lines can be selected.",
+              "type": "boolean"
+            },
+            "optional": {
+              "description": "Configures whether the line filter is optional (true) or required (false).",
+              "type": "boolean"
+            }
+          }
+        },
+        "Order": {
+          "required": ["type", "optional"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "description": "The Order filter enables the end user to filter the data shown on the dashboard based on orders.",
+              "const": "ORDER"
+            },
+            "single_selection": {
+              "description": "If set, only one order can be selected; otherwise, multiple orders can be selected.",
+              "type": "boolean"
+            },
+            "optional": {
+              "description": "Configures whether the order filter is optional (true) or required (false).",
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "Widget": {
+      "type": "object",
+      "oneOf": [
+        { "$ref": "#/$def/Widget/WidgetItem/Text" },
+        { "$ref": "#/$def/Widget/WidgetItem/Chart" },
+        { "$ref": "#/$def/Widget/WidgetItem/PieChart" },
+        { "$ref": "#/$def/Widget/WidgetItem/OrderProgress" }
+      ],
+      "WidgetItem": {
+        "Text": {
+          "required": [
+            "type",
+            "title",
+            "column",
+            "row",
+            "width",
+            "height",
+            "data_source",
+            "field"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "description": "Text widget.", "const": "TEXT" },
+            "title": {
+              "description": "Title of the widget.",
+              "$ref": "#/$def/Name"
+            },
+            "column": {
+              "description": "The horizontal position of the widget.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 11
+            },
+            "row": {
+              "description": "The vertical position of the widget.",
+              "type": "integer",
+              "minimum": 0
+            },
+            "width": {
+              "description": "The width of the widget",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            },
+            "height": {
+              "description": "The height of the widget",
+              "type": "integer",
+              "minimum": 1
+            },
+            "data_source": {
+              "type": "object",
+              "oneOf": [
+                {
+                  "$ref": "#/$def/Widget/WidgetDataSource/WeighingStatisticData"
+                },
+                {
+                  "$ref": "#/$def/Widget/WidgetDataSource/DowntimeStatisticData"
+                },
+                {
+                  "$ref": "#/$def/Widget/WidgetDataSource/OrderStatisticData"
+                },
+                {
+                  "$ref": "#/$def/Widget/WidgetDataSource/LoginStatisticData"
+                },
+                {
+                  "$ref": "#/$def/Widget/WidgetDataSource/OrderData"
+                }
+              ]
+            },
+            "field": {
+              "description": "Data source field for this widget.",
+              "type": "string"
+            },
+            "time_filter": {
+              "description": "Time filter that applies only to this widget.",
+              "$ref": "#/$def/Enums/DashboardDataSourceTimeFilter"
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "data_source": {
+                    "type": "object",
+                    "$ref": "#/$def/Widget/WidgetDataSource/WeighingStatisticData"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "field": {
+                    "$ref": "#/$def/Enums/DashboardWeighingStatisticDataSource/Metric"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "data_source": {
+                    "type": "object",
+                    "$ref": "#/$def/Widget/WidgetDataSource/DowntimeStatisticData"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "field": {
+                    "$ref": "#/$def/Enums/DashboardDowntimeStatisticDataSource/Metric"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "data_source": {
+                    "type": "object",
+                    "$ref": "#/$def/Widget/WidgetDataSource/OrderStatisticData"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "field": {
+                    "$ref": "#/$def/Enums/DashboardOrderStatisticDataSource/Metric"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "data_source": {
+                    "type": "object",
+                    "$ref": "#/$def/Widget/WidgetDataSource/LoginStatisticData"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "field": {
+                    "$ref": "#/$def/Enums/DashboardLoginStatisticDataSource/Metric"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "data_source": {
+                    "type": "object",
+                    "$ref": "#/$def/Widget/WidgetDataSource/OrderData"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "field": {
+                    "$ref": "#/$def/Enums/DashboardOrderDataSource/Field"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "Chart": {
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "title",
+            "column",
+            "row",
+            "width",
+            "height",
+            "data_source",
+            "common_series_settings",
+            "series",
+            "pagination_enabled"
+          ],
+          "properties": {
+            "type": { "description": "Chart widget.", "const": "CHART" },
+            "title": {
+              "description": "Title of the widget.",
+              "$ref": "#/$def/Name"
+            },
+            "column": {
+              "description": "The horizontal position of the widget.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 11
+            },
+            "row": {
+              "description": "The vertical position of the widget.",
+              "type": "integer",
+              "minimum": 0
+            },
+            "width": {
+              "description": "The width of the widget",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            },
+            "height": {
+              "description": "The height of the widget",
+              "type": "integer",
+              "minimum": 1
+            },
+            "data_source": {
+              "type": "object",
+              "oneOf": [
+                {
+                  "$ref": "#/$def/Widget/WidgetDataSource/WeighingStatisticData"
+                },
+                {
+                  "$ref": "#/$def/Widget/WidgetDataSource/DowntimeStatisticData"
+                },
+                {
+                  "$ref": "#/$def/Widget/WidgetDataSource/OrderStatisticData"
+                },
+                {
+                  "$ref": "#/$def/Widget/WidgetDataSource/LoginStatisticData"
+                }
+              ]
+            },
+            "common_series_settings": {
+              "description": "Settings that apply to every series.",
+              "type": "object",
+              "required": ["dimension"],
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "$ref": "#/$def/Enums/DashboardChartSeriesType"
+                },
+                "dimension": { "type": "string" },
+                "time_filter": {
+                  "description": "Time filter that applies only to this widget.",
+                  "$ref": "#/$def/Enums/DashboardDataSourceTimeFilter"
+                }
+              }
+            },
+            "series": {
+              "description": "List of individual series or auto-generated series configuration.",
+              "oneOf": [
+                {
+                  "type": "object",
+                  "description": "Automatically generated series definition.",
+                  "required": ["generate_by", "metric"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "generate_by": {
+                      "description": "Defines how the series should be automatically generated (e.g., BEST_WORST).",
+                      "type": "string",
+                      "enum": ["BEST_WORST"]
+                    },
+                    "best_count": {
+                      "description": "Defines how many of the best values should be shown.",
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "worst_count": {
+                      "description": "Defines how many of the worst values should be shown.",
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "$ref": "#/$def/Enums/DashboardChartSeriesType"
+                    },
+                    "metric": {
+                      "description": "Metric for generated series.",
+                      "type": "string"
+                    },
+                    "time_filter": {
+                      "description": "Time filter that applies to all generated series.",
+                      "$ref": "#/$def/Enums/DashboardDataSourceTimeFilter"
+                    }
+                  }
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "metric"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "type": {
+                        "$ref": "#/$def/Enums/DashboardChartSeriesType"
+                      },
+                      "name": {
+                        "description": "Name of the series.",
+                        "$ref": "#/$def/Name"
+                      },
+                      "metric": {
+                        "description": "Metric for this series.",
+                        "type": "string"
+                      },
+                      "time_filter": {
+                        "description": "Time filter that applies only to this series.",
+                        "$ref": "#/$def/Enums/DashboardDataSourceTimeFilter"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "pagination_enabled": {
+              "description": "Configures whether the displayed data should be split into pages. Page size can be configured by 'maximum_page_items'",
+              "type": "boolean"
+            },
+            "maximum_page_items": {
+              "description": "Configures how many items are shown per page when 'pagination_enabled' is enabled. Default value is 10.",
+              "type": "integer",
+              "minimum": 0
+            },
+            "rotated": {
+              "description": "Configures whether the chart should be rotated or not.",
+              "type": "boolean"
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "data_source": {
+                    "type": "object",
+                    "$ref": "#/$def/Widget/WidgetDataSource/WeighingStatisticData"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "common_series_settings": {
+                    "type": "object",
+                    "properties": {
+                      "dimension": {
+                        "$ref": "#/$def/Enums/DashboardWeighingStatisticDataSource/Dimension"
+                      }
+                    }
+                  },
+                  "series": {
+                    "oneOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "metric": {
+                              "$ref": "#/$def/Enums/DashboardWeighingStatisticDataSource/Metric"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "metric": {
+                            "$ref": "#/$def/Enums/DashboardWeighingStatisticDataSource/Metric"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "data_source": {
+                    "type": "object",
+                    "$ref": "#/$def/Widget/WidgetDataSource/DowntimeStatisticData"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "common_series_settings": {
+                    "type": "object",
+                    "properties": {
+                      "dimension": {
+                        "$ref": "#/$def/Enums/DashboardDowntimeStatisticDataSource/Dimension"
+                      }
+                    }
+                  },
+                  "series": {
+                    "oneOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "metric": {
+                              "$ref": "#/$def/Enums/DashboardDowntimeStatisticDataSource/Metric"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "metric": {
+                            "$ref": "#/$def/Enums/DashboardDowntimeStatisticDataSource/Metric"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "data_source": {
+                    "type": "object",
+                    "$ref": "#/$def/Widget/WidgetDataSource/OrderStatisticData"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "common_series_settings": {
+                    "type": "object",
+                    "properties": {
+                      "dimension": {
+                        "$ref": "#/$def/Enums/DashboardOrderStatisticDataSource/Dimension"
+                      }
+                    }
+                  },
+                  "series": {
+                    "oneOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "metric": {
+                              "$ref": "#/$def/Enums/DashboardOrderStatisticDataSource/Metric"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "metric": {
+                            "$ref": "#/$def/Enums/DashboardOrderStatisticDataSource/Metric"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "data_source": {
+                    "type": "object",
+                    "$ref": "#/$def/Widget/WidgetDataSource/LoginStatisticData"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "common_series_settings": {
+                    "type": "object",
+                    "properties": {
+                      "dimension": {
+                        "$ref": "#/$def/Enums/DashboardLoginStatisticDataSource/Dimension"
+                      }
+                    }
+                  },
+                  "series": {
+                    "oneOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "metric": {
+                              "$ref": "#/$def/Enums/DashboardLoginStatisticDataSource/Metric"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "metric": {
+                            "$ref": "#/$def/Enums/DashboardLoginStatisticDataSource/Metric"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "PieChart": {
+          "required": [
+            "type",
+            "title",
+            "column",
+            "row",
+            "width",
+            "height",
+            "data_source",
+            "common_series_settings",
+            "series"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "description": "Pie chart widget.",
+              "const": "PIE_CHART"
+            },
+            "title": {
+              "description": "Title of the widget.",
+              "$ref": "#/$def/Name"
+            },
+            "column": {
+              "description": "The horizontal position of the widget.",
+              "type": "integer",
+              "minimum": 0
+            },
+            "row": {
+              "description": "The vertical position of the widget.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 11
+            },
+            "width": {
+              "description": "The width of the widget",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            },
+            "height": {
+              "description": "The height of the widget",
+              "type": "integer",
+              "minimum": 1
+            },
+            "data_source": {
+              "type": "object",
+              "oneOf": [
+                {
+                  "$ref": "#/$def/Widget/WidgetDataSource/WeighingStatisticData"
+                },
+                {
+                  "$ref": "#/$def/Widget/WidgetDataSource/DowntimeStatisticData"
+                },
+                {
+                  "$ref": "#/$def/Widget/WidgetDataSource/OrderStatisticData"
+                },
+                {
+                  "$ref": "#/$def/Widget/WidgetDataSource/LoginStatisticData"
+                }
+              ]
+            },
+            "common_series_settings": {
+              "type": "object",
+              "required": ["dimension"],
+              "additionalProperties": false,
+              "properties": {
+                "dimension": {
+                  "type": "string"
+                },
+                "time_filter": {
+                  "description": "Time filter that applies only to this widget.",
+                  "$ref": "#/$def/Enums/DashboardDataSourceTimeFilter"
+                },
+                "small_values_grouping": {
+                  "description": "Configures whether (and how) smaller values should be grouped into a single slice.",
+                  "$ref": "#/$def/Widget/PieChartSmallValuesGrouping"
+                }
+              }
+            },
+            "series": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "metric"],
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "description": "Name of the series",
+                    "$ref": "#/$def/Name"
+                  },
+                  "metric": {
+                    "description": "Metric for this series.",
+                    "type": "string"
+                  },
+                  "time_filter": {
+                    "description": "Time filter that applies only to this series.",
+                    "$ref": "#/$def/Enums/DashboardDataSourceTimeFilter"
+                  },
+                  "small_values_grouping": {
+                    "description": "Configures whether (and how) smaller values should be grouped into a single slice.",
+                    "$ref": "#/$def/Widget/PieChartSmallValuesGrouping"
+                  }
+                }
+              }
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "data_source": {
+                    "type": "object",
+                    "$ref": "#/$def/Widget/WidgetDataSource/WeighingStatisticData"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "common_series_settings": {
+                    "type": "object",
+                    "properties": {
+                      "dimension": {
+                        "$ref": "#/$def/Enums/DashboardWeighingStatisticDataSource/Dimension"
+                      }
+                    }
+                  },
+                  "series": {
+                    "oneOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "metric": { "$ref": "#/$def/Enums/DashboardWeighingStatisticDataSource/Metric" }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "metric": { "$ref": "#/$def/Enums/DashboardWeighingStatisticDataSource/Metric" }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "data_source": {
+                    "type": "object",
+                    "$ref": "#/$def/Widget/WidgetDataSource/DowntimeStatisticData"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "common_series_settings": {
+                    "type": "object",
+                    "properties": {
+                      "dimension": {
+                        "$ref": "#/$def/Enums/DashboardDowntimeStatisticDataSource/Dimension"
+                      }
+                    }
+                  },
+                  "series": {
+                    "oneOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "metric": { "$ref": "#/$def/Enums/DashboardDowntimeStatisticDataSource/Metric" }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "metric": { "$ref": "#/$def/Enums/DashboardDowntimeStatisticDataSource/Metric" }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "data_source": {
+                    "type": "object",
+                    "$ref": "#/$def/Widget/WidgetDataSource/OrderStatisticData"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "common_series_settings": {
+                    "type": "object",
+                    "properties": {
+                      "dimension": {
+                        "$ref": "#/$def/Enums/DashboardOrderStatisticDataSource/Dimension"
+                      }
+                    }
+                  },
+                  "series": {
+                    "oneOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "metric": { "$ref": "#/$def/Enums/DashboardOrderStatisticDataSource/Metric" }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "metric": { "$ref": "#/$def/Enums/DashboardOrderStatisticDataSource/Metric" }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "data_source": {
+                    "type": "object",
+                    "$ref": "#/$def/Widget/WidgetDataSource/LoginStatisticData"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "common_series_settings": {
+                    "type": "object",
+                    "properties": {
+                      "dimension": {
+                        "$ref": "#/$def/Enums/DashboardLoginStatisticDataSource/Dimension"
+                      }
+                    }
+                  },
+                  "series": {
+                    "oneOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "metric": { "$ref": "#/$def/Enums/DashboardLoginStatisticDataSource/Metric" }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "metric": { "$ref": "#/$def/Enums/DashboardLoginStatisticDataSource/Metric" }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "OrderProgress": {
+          "required": [
+            "type",
+            "column",
+            "row",
+            "width",
+            "height"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "description": "Order progress widget.",
+              "const": "ORDER_PROGRESS"
+            },
+            "title": {
+              "description": "Title of the widget.",
+              "$ref": "#/$def/Name"
+            },
+            "column": {
+              "description": "The horizontal position of the widget.",
+              "type": "integer",
+              "minimum": 0
+            },
+            "row": {
+              "description": "The vertical position of the widget.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 11
+            },
+            "width": {
+              "description": "The width of the widget",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            },
+            "height": {
+              "description": "The height of the widget",
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      },
+      "WidgetDataSource": {
+        "WeighingStatisticData": {
+          "description": "Weighing statistic data",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "process_type",
+            "include_only_order_relevant_weighings"
+          ],
+          "type": "object",
+          "properties": {
+            "type": {
+              "description": "Defines the weighing statistic data",
+              "const": "WEIGHING_STATISTIC_DATA"
+            },
+            "process_type": {
+              "description": "Data of which process type should be included.",
+              "$ref": "#/$def/Enums/OrderTypeReference"
+            },
+            "include_only_order_relevant_weighings": {
+              "description": "Configures whether only weighings relevant to orders are shown",
+              "type": "boolean"
+            }
+          }
+        },
+        "DowntimeStatisticData": {
+          "description": "Downtime statistic data",
+          "additionalProperties": false,
+          "required": ["type"],
+          "type": "object",
+          "properties": {
+            "type": {
+              "description": "Defines the downtime statistic data",
+              "const": "DOWNTIME_STATISTIC_DATA"
+            }
+          }
+        },
+        "OrderStatisticData": {
+          "description": "Order statistic data",
+          "additionalProperties": false,
+          "required": ["type", "order_type"],
+          "type": "object",
+          "properties": {
+            "type": {
+              "description": "Defines the order statistic data",
+              "const": "ORDER_STATISTIC_DATA"
+            },
+            "order_type": {
+              "description": "Data of which order type should be included.",
+              "$ref": "#/$def/Enums/OrderTypeReference"
+            }
+          }
+        },
+        "LoginStatisticData": {
+          "description": "Login statistic data",
+          "additionalProperties": false,
+          "required": ["type"],
+          "type": "object",
+          "properties": {
+            "type": {
+              "description": "Defines the login statistic data",
+              "const": "LOGIN_STATISTIC_DATA"
+            },
+            "activity_types": {
+              "description": "Data of which activity types should be included.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$def/Enums/ActivityType"
+              }
+            }
+          }
+        },
+        "OrderData": {
+          "description": "Order data",
+          "additionalProperties": false,
+          "required": ["type"],
+          "type": "object",
+          "properties": {
+            "type": {
+              "description": "Defines the order data",
+              "const": "ORDER_DATA"
+            }
+          }
+        }
+      },
+      "PieChartSmallValuesGrouping": {
+        "type": "object",
+        "required": ["mode"],
+        "description": "Configures how smaller points on the PieChart are collected in a single group.",
+        "properties": {
+          "mode": {
+            "default": "TOP_N",
+            "$ref": "#/$def/Enums/DashboardPieChartSeriesGroupingMode"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "mode": {
+                  "const": "TOP_N"
+                }
+              }
+            },
+            "then": {
+              "description": "Top N points with the biggest values remain ungrouped.",
+              "required": ["mode", "top_count"],
+              "properties": {
+                "top_count": {
+                  "description": "Defines how many of the biggest values remain ungrouped.",
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "mode": {
+                  "const": "THRESHOLD"
+                }
+              }
+            },
+            "then": {
+              "description": "Points that fall beyond a threshold establish a group.",
+              "required": ["mode", "threshold"],
+              "properties": {
+                "threshold": {
+                  "description": "Defines below which threshold items establish a group.",
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "Enums": {
+      "DashboardCategory": {
+        "type": "string",
+        "enum": ["GENERAL", "PRODUCTION", "HARVEST"]
+      },
+      "DefaultDashboardTimeFilter": {
+        "type": "string",
+        "enum": [
+          "TODAY",
+          "YESTERDAY",
+          "THIS_WEEK",
+          "LAST_WEEK",
+          "THIS_MONTH",
+          "LAST_MONTH",
+          "THIS_QUARTER",
+          "LAST_QUARTER",
+          "THIS_YEAR",
+          "LAST_YEAR",
+          "LAST_7_DAYS",
+          "LAST_14_DAYS",
+          "LAST_30_DAYS",
+          "LAST_3_MONTHS ",
+          "LAST_6_MONTHS ",
+          "LAST_12_MONTHS"
+        ]
+      },
+      "DashboardDataSourceTimeFilter": {
+        "type": "string",
+        "enum": [
+          "NOT_SET",
+          "TODAY",
+          "YESTERDAY",
+          "THIS_WEEK",
+          "LAST_WEEK",
+          "THIS_MONTH",
+          "LAST_MONTH",
+          "THIS_QUARTER",
+          "LAST_QUARTER",
+          "THIS_YEAR",
+          "LAST_YEAR",
+          "LAST_5_MINUTES",
+          "LAST_15_MINUTES",
+          "LAST_30_MINUTES",
+          "LAST_HOUR",
+          "LAST_2_HOURS",
+          "LAST_4_HOURS",
+          "LAST_8_HOURS",
+          "LAST_7_DAYS",
+          "LAST_14_DAYS",
+          "LAST_30_DAYS",
+          "LAST_3_MONTHS",
+          "LAST_6_MONTHS",
+          "LAST_12_MONTHS"
+        ]
+      },
+      "LineType": {
+        "type": "string",
+        "enum": ["PRODUCTION", "HARVEST", "SECONDARY"]
+      },
+      "OrderTypeReference": {
+        "type": "string",
+        "enum": ["PRODUCTION", "HARVEST"]
+      },
+      "ActivityType": {
+        "type": "string",
+        "enum": [
+          "GENERAL",
+          "PRODUCTION_VALUE_ADDING",
+          "PRODUCTION_NON_VALUE_ADDING",
+          "HARVEST"
+        ]
+      },
+      "DashboardChartSeriesType": {
+        "type": "string",
+        "enum": ["AREA", "BAR", "SPLINE", "LINE"]
+      },
+      "DashboardPieChartSeriesGroupingMode": {
+        "type": "string",
+        "enum": ["TOP_N", "THRESHOLD"]
+      },
+      "DashboardWeighingStatisticDataSource": {
+        "Dimension": {
+          "type": "string",
+          "enum": [
+            "DATE_TIME_1M",
+            "DATE_TIME_5M",
+            "DATE_TIME_15M",
+            "DATE_TIME_30M",
+            "DATE_TIME_1H",
+            "DATE_TIME_2H",
+            "DATE_TIME_4H",
+            "DATE_TIME_8H",
+            "DATE",
+            "YEAR_WEEK",
+            "YEAR_MONTH",
+            "YEAR_QUARTER",
+            "YEAR",
+            "ARTICLE_NAME",
+            "ORDER_CODE",
+            "USER_DISPLAY_NAME",
+            "DEVICE_NAME",
+            "LINE_NAME",
+            "CUSTOMER_NAME",
+            "CULTIVATION_AREA_NAME",
+            "GOODS_RECEIPT_CODE",
+            "RAW_MATERIAL_NAME",
+            "PACKAGING_MATERIAL_NAME"
+          ]
+        },
+        "Metric": {
+          "type": "string",
+          "enum": [
+            "QUANTITY",
+            "QUANTITY_SUM",
+            "QUANTITY_INSPECTED",
+            "QUANTITY_TU1_TO1",
+            "QUANTITY_TU1",
+            "QUANTITY_TU1_INSPECTED",
+            "QUANTITY_TU2",
+            "QUANTITY_TU2_INSPECTED",
+            "QUANTITY_TO1",
+            "QUANTITY_TO1_INSPECTED",
+            "QUANTITY_TO2",
+            "QUANTITY_TO2_INSPECTED",
+            "TU1_PERCENT",
+            "TO1_PERCENT",
+            "WEIGHT_KG",
+            "WEIGHT_SUM_KG",
+            "WEIGHT_INSPECTED_KG",
+            "NOMINAL_WEIGHT_KG",
+            "AVERAGE_WEIGHT_KG",
+            "MINIMUM_WEIGHT_KG",
+            "MINIMUM_WEIGHT_INSPECTED_KG",
+            "MAXIMUM_WEIGHT_KG",
+            "MAXIMUM_WEIGHT_INSPECTED_KG",
+            "PIECES_PER_HOUR",
+            "WEIGHT_KG_PER_HOUR",
+            "NOMINAL_WEIGHT_KG_PER_HOUR",
+            "PIECES_PER_MINUTE",
+            "WEIGHT_KG_PER_MINUTE",
+            "NOMINAL_WEIGHT_KG_PER_MINUTE",
+            "GIVEAWAY_QN_KG",
+            "GIVEAWAY_FTT_KG",
+            "GIVEAWAY_QN_PERCENT",
+            "GIVEAWAY_FTT_PERCENT",
+            "QUANTITY_NOT_ACCEPTED",
+            "QUANTITY_NOT_ACCEPTED_TU1_TO1",
+            "QUANTITY_NOT_ACCEPTED_TU1",
+            "QUANTITY_NOT_ACCEPTED_TO1",
+            "QUANTITY_FAULTY",
+            "WASTE_WEIGHT_KG",
+            "WASTE_PERCENT",
+            "PRODUCTION_TIME"
+          ]
+        }
+      },
+      "DashboardDowntimeStatisticDataSource": {
+        "Dimension": {
+          "type": "string",
+          "enum": [
+            "DATE_TIME_1M",
+            "DATE_TIME_5M",
+            "DATE_TIME_15M",
+            "DATE_TIME_30M",
+            "DATE_TIME_1H",
+            "DATE_TIME_2H",
+            "DATE_TIME_4H",
+            "DATE_TIME_8H",
+            "DATE",
+            "YEAR_WEEK",
+            "YEAR_MONTH",
+            "YEAR_QUARTER",
+            "YEAR",
+            "DOWNTIME_TYPE",
+            "DOWNTIME_REASON_NAME",
+            "LINE_NAME"
+          ]
+        },
+        "Metric": {
+          "type": "string",
+          "enum": [
+            "QUANTITY",
+            "TOTAL_DOWNTIME",
+            "AVERAGE_DOWNTIME"
+          ]
+        }
+      },
+      "DashboardOrderStatisticDataSource": {
+        "Dimension": {
+          "type": "string",
+          "enum": [
+            "DATE_TIME_1M",
+            "DATE_TIME_5M",
+            "DATE_TIME_15M",
+            "DATE_TIME_30M",
+            "DATE_TIME_1H",
+            "DATE_TIME_2H",
+            "DATE_TIME_4H",
+            "DATE_TIME_8H",
+            "DATE",
+            "YEAR_WEEK",
+            "YEAR_MONTH",
+            "YEAR_QUARTER",
+            "YEAR",
+            "ORDER_CODE",
+            "ARTICLE_NAME",
+            "CUSTOMER_NAME",
+            "LINE_NAME"
+          ]
+        },
+        "Metric": {
+          "type": "string",
+          "enum": [
+            "QUANTITY",
+            "QUANTITY_INSPECTED",
+            "QUANTITY_TU1_TO1",
+            "QUANTITY_TU1",
+            "QUANTITY_TU1_INSPECTED",
+            "QUANTITY_TU2",
+            "QUANTITY_TU2_INSPECTED",
+            "QUANTITY_TO1",
+            "QUANTITY_TO1_INSPECTED",
+            "QUANTITY_TO2",
+            "QUANTITY_TO2_INSPECTED",
+            "TU1_PERCENT",
+            "TO1_PERCENT",
+            "WEIGHT_KG",
+            "WEIGHT_INSPECTED_KG",
+            "NOMINAL_WEIGHT_KG",
+            "AVERAGE_WEIGHT_KG",
+            "MINIMUM_WEIGHT_KG",
+            "MINIMUM_WEIGHT_INSPECTED_KG",
+            "MAXIMUM_WEIGHT_KG",
+            "MAXIMUM_WEIGHT_INSPECTED_KG",
+            "PIECES_PER_HOUR",
+            "WEIGHT_KG_PER_HOUR",
+            "NOMINAL_WEIGHT_KG_PER_HOUR",
+            "PIECES_PER_MINUTE",
+            "WEIGHT_KG_PER_MINUTE",
+            "NOMINAL_WEIGHT_KG_PER_MINUTE",
+            "GIVEAWAY_QN_KG",
+            "GIVEAWAY_FTT_KG",
+            "GIVEAWAY_QN_PERCENT",
+            "GIVEAWAY_FTT_PERCENT",
+            "QUANTITY_NOT_ACCEPTED",
+            "QUANTITY_NOT_ACCEPTED_TU1_TO1",
+            "QUANTITY_NOT_ACCEPTED_TU1",
+            "QUANTITY_NOT_ACCEPTED_TO1",
+            "QUANTITY_FAULTY",
+            "WASTE_WEIGHT_KG",
+            "WASTE_PERCENT",
+            "SECONDARY_PACKAGING_QUANTITY",
+            "TERTIARY_PACKAGING_QUANTITY",
+            "SECONDARY_PACKAGING_QUANTITY_PER_MINUTE",
+            "SECONDARY_PACKAGING_QUANTITY_PER_HOUR",
+            "TERTIARY_PACKAGING_QUANTITY_PER_HOUR",
+            "ORDER_TIME",
+            "PRODUCTION_TIME",
+            "DOWNTIME",
+            "PLANNED_DOWNTIME",
+            "UNPLANNED_DOWNTIME",
+            "PREPARATION_TIME",
+            "CLEANUP_TIME"
+          ]
+        }
+      },
+      "DashboardLoginStatisticDataSource": {
+        "Dimension": {
+          "type": "string",
+          "enum": [
+            "DATE_TIME_1M",
+            "DATE_TIME_5M",
+            "DATE_TIME_15M",
+            "DATE_TIME_30M",
+            "DATE_TIME_1H",
+            "DATE_TIME_2H",
+            "DATE_TIME_4H",
+            "DATE_TIME_8H",
+            "DATE",
+            "YEAR_WEEK",
+            "YEAR_MONTH",
+            "YEAR_QUARTER",
+            "YEAR",
+            "USER_DISPLAY_NAME",
+            "LINE_NAME",
+            "DEVICE_NAME",
+            "ACTIVITY_NAME"
+          ]
+        },
+        "Metric": {
+          "type": "string",
+          "enum": [
+            "WORKING_TIME"
+          ]
+        }
+      },
+      "DashboardOrderDataSource": {
+        "Field": {
+          "type": "string",
+          "enum": [
+            "ORDER_CODE",
+            "ARTICLE_NAME",
+            "CUSTOMER_NAME",
+            "LINE_NAME",
+            "FREE_TEXT_01",
+            "FREE_TEXT_02",
+            "FREE_TEXT_03",
+            "FREE_TEXT_04",
+            "FREE_TEXT_05"
+          ]
+        }
+      }
+    }
+  }
+}
